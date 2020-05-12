@@ -14,6 +14,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.database.Cursor;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.SecurityException;
@@ -55,7 +56,14 @@ public class RNSmsAndroidModule extends ReactContextBaseJavaModule {
 
             try {
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(phoneNumberString,null,body,null,null);
+                ArrayList<String> parts = smsManager.divideMessage(body);
+                if (parts.size() == 1) {
+                  Log.i("olly", "Sending single SMS");
+                  smsManager.sendTextMessage(phoneNumberString,null,body,null,null);
+                } else {
+                  Log.i("olly", "Sending multiple SMS");
+                  smsManager.sendMultipartTextMessage(phoneNumberString,null,parts,null,null);
+                }
                 callback.invoke(null,"success");
             }
 
